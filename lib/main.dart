@@ -1,13 +1,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/layout/home_layout.dart';
-import 'package:todo_app/shared/bloc_observer.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sizer/sizer.dart';
+import 'package:todo_app/presentation/router/app_router.dart';
+import 'business_logic/bloc_observer.dart';
+import 'business_logic/cubit/cubit.dart';
 
 void main() {
 
   BlocOverrides.runZoned(
         () {
-      runApp(const MyApp());
+      runApp(MyApp());
     },
     blocObserver: MyBlocObserver(),
   );
@@ -15,14 +18,21 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final AppRouter appRouter = AppRouter();
+  MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomeLayout(),
+    return Sizer(
+      builder: (context, orientation, deviceType) {
+    return BlocProvider(
+      create: (context) => AppCubit()..createDatabase(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        onGenerateRoute: appRouter.onGenerateRoute,
+        ),
     );
-  }
+    },
+  );
+}
 }

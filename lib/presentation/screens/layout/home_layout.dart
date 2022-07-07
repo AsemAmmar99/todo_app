@@ -2,14 +2,12 @@ import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:todo_app/modules/archived_tasks/archived_tasks_screen.dart';
-import 'package:todo_app/modules/done_tasks/done_tasks_screen.dart';
-import 'package:todo_app/modules/new_tasks/new_tasks_screen.dart';
-import 'package:todo_app/shared/components/components.dart';
-import 'package:todo_app/shared/components/constants.dart';
-import 'package:todo_app/shared/cubit/cubit.dart';
-import 'package:todo_app/shared/cubit/states.dart';
+import 'package:sizer/sizer.dart';
+import 'package:todo_app/presentation/widgets/default_text.dart';
+import '../../../business_logic/cubit/cubit.dart';
+import '../../../business_logic/cubit/states.dart';
+import '../../styles/colors.dart';
+import '../../widgets/default_form_field.dart';
 
 class HomeLayout extends StatelessWidget {
 
@@ -21,9 +19,7 @@ class HomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (BuildContext context) => AppCubit()..createDatabase(),
-      child: BlocConsumer<AppCubit, AppStates>(
+    return BlocConsumer<AppCubit, AppStates>(
         listener: (BuildContext context, AppStates state) {
           if(state is AppInsertDBState){
             Navigator.pop(context);
@@ -34,11 +30,17 @@ class HomeLayout extends StatelessWidget {
           AppCubit cubit = AppCubit.get(context);
 
           return Scaffold(
+            backgroundColor: lightBlue,
             key: scaffoldKey,
             appBar: AppBar(
-                backgroundColor: Colors.indigo[900],
-                title: Text(
-                  cubit.titles[cubit.currentIndex],
+                backgroundColor: darkBlue,
+                title: Center(
+                  child: DefaultText(
+                    text: cubit.titles[cubit.currentIndex],
+                    color: lightBlue,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                  ),
                 )
             ),
             body: ConditionalBuilder(
@@ -47,73 +49,63 @@ class HomeLayout extends StatelessWidget {
               fallback: (context) => const Center(child: CircularProgressIndicator()),
             ),
             floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.indigo[800],
+              backgroundColor: darkBlue,
               onPressed: (){
                 if(cubit.isBottomSheetShown){
                   if(formKey.currentState!.validate()) {
                     cubit.insertToDatabase(title: titleController.text, time: timeController.text, date: dateController.text,);
-                    // insertToDatabase(date: dateController.text,
-                    //   title: titleController.text,
-                    //   time: timeController.text,
-                    // ).then((value) {
-                    //   getDataFromDatabase(database).then((value) {
-                    //     Navigator.pop(context);
-                    //     // setState(() {
-                    //     //   isBottomSheetShown = false;
-                    //     //   fabIcon = Icons.edit;
-                    //     //   tasks = value;
-                    //     // });
-                    //   });
-                    // });
                   }
                 }else {
                   scaffoldKey.currentState!.showBottomSheet((context) =>
                       Container(
-                        color: Colors.indigo[900],
-                        padding: const EdgeInsets.all(15.0),
+                        color: darkBlue,
+                        padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 3.w),
                         child: Form(
                           key: formKey,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              defaultFormField(
+                              DefaultFormField(
                                 controller: titleController,
-                                type: TextInputType.text,
-                                validate: (String? value){
+                                keyboardType: TextInputType.text,
+                                validator: (value){
                                   if(value!.isEmpty){
                                     return 'Title must not be empty';
                                   }
                                   return null;
                                 },
-                                label: 'Task Title',
-                                prefix: Icons.title_outlined,
+                                labelText: 'Task Title',
+                                textColor: white,
+                                prefixIcon: const Icon(Icons.title_outlined, color: lightBlue,),
                               ),
-                              const SizedBox(height: 10.0,),
-                              defaultFormField(
-                                controller: timeController,
-                                type: TextInputType.datetime,
-                                onTap: (){
-                                  showTimePicker(
-                                    context: context,
-                                    initialTime: TimeOfDay.now(),
-                                  ).then((value) {
-                                    timeController.text = value!.format(context).toString();
-                                  });
-                                },
-                                validate: (String? value){
-                                  if(value!.isEmpty){
-                                    return 'Time must not be empty';
-                                  }
-                                  return null;
-                                },
-                                label: 'Task Time',
-                                prefix: Icons.timer,
+                              Padding(
+                                padding: EdgeInsets.symmetric(vertical: 2.h),
+                                child: DefaultFormField(
+                                  controller: timeController,
+                                  onTap: (){
+                                    showTimePicker(
+                                      context: context,
+                                      initialTime: TimeOfDay.now(),
+                                    ).then((value) {
+                                      timeController.text = value!.format(context).toString();
+                                    });
+                                  },
+                                  validator: (value){
+                                    if(value!.isEmpty){
+                                      return 'Time must not be empty';
+                                    }
+                                    return null;
+                                  },
+                                  labelText: 'Task Time',
+                                  textColor: white,
+                                  prefixIcon: const Icon(Icons.timer, color: lightBlue,),
+                                  keyboardType: TextInputType.datetime,
+                                ),
                               ),
-                              const SizedBox(height: 10.0,),
-                              defaultFormField(
+                              DefaultFormField(
                                 controller: dateController,
-                                type: TextInputType.datetime,
+                                keyboardType: TextInputType.datetime,
                                 onTap: (){
                                   showDatePicker(context: context,
                                     initialDate: DateTime.now(),
@@ -123,14 +115,15 @@ class HomeLayout extends StatelessWidget {
                                     dateController.text = DateFormat.yMMMd().format(value!).toString();
                                   });
                                 },
-                                validate: (String? value){
+                                validator: (value){
                                   if(value!.isEmpty){
                                     return 'Date must not be empty';
                                   }
                                   return null;
                                 },
-                                label: 'Task Date',
-                                prefix: Icons.date_range_outlined,
+                                labelText: 'Task Date',
+                                textColor: white,
+                                prefixIcon: const Icon(Icons.date_range_outlined, color: lightBlue,),
                               ),
                             ],
                           ),
@@ -143,7 +136,7 @@ class HomeLayout extends StatelessWidget {
                   cubit.changeBSState(isShow: true, icon: Icons.add,);
                 }
               },
-              child: Icon(cubit.fabIcon,),
+              child: Icon(cubit.fabIcon, color: lightBlue,),
             ),
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: cubit.currentIndex,
@@ -151,26 +144,25 @@ class HomeLayout extends StatelessWidget {
                 cubit.changeIndex(index);
               },
               type: BottomNavigationBarType.fixed,
-              backgroundColor: Colors.indigo[800],
+              backgroundColor: darkBlue,
+              selectedItemColor: blue,
+              unselectedItemColor: lightBlue,
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.menu,
-                    color: Colors.white,
                   ),
                   label: 'Tasks',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.check_circle_outline,
-                    color: Colors.white,
                   ),
                   label: 'Done',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.archive_outlined,
-                    color: Colors.white,
                   ),
                   label: 'Archived',
                 ),
@@ -178,7 +170,6 @@ class HomeLayout extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
+      );
   }
 }

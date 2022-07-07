@@ -1,17 +1,17 @@
-import 'dart:math';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:todo_app/modules/archived_tasks/archived_tasks_screen.dart';
-import 'package:todo_app/modules/done_tasks/done_tasks_screen.dart';
-import 'package:todo_app/modules/new_tasks/new_tasks_screen.dart';
-import 'package:todo_app/shared/cubit/states.dart';
+import 'package:todo_app/business_logic/cubit/states.dart';
+
+import '../../presentation/screens/archived_tasks/archived_tasks_screen.dart';
+import '../../presentation/screens/done_tasks/done_tasks_screen.dart';
+import '../../presentation/screens/new_tasks/new_tasks_screen.dart';
 
 class AppCubit extends Cubit<AppStates>{
   AppCubit(): super(AppInitState());
 
-  static AppCubit get(context) => BlocProvider.of(context);
+  static AppCubit get(context) => BlocProvider.of<AppCubit>(context);
 
   int currentIndex = 0;
 
@@ -42,16 +42,24 @@ class AppCubit extends Cubit<AppStates>{
       'todo.db',
       version: 1,
       onCreate: (database, version){
-        print('database created');
+        if (kDebugMode) {
+          print('database created');
+        }
         database.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY, title TEXT, date TEXT, time TEXT, status TEXT)').then((value){
-          print('table created');
+          if (kDebugMode) {
+            print('table created');
+          }
         }).catchError((error){
-          print('Error when creating table ${error.toString()}');
+          if (kDebugMode) {
+            print('Error when creating table ${error.toString()}');
+          }
         });
       },
       onOpen: (database){
         getDataFromDatabase(database);
-        print('database opened');
+        if (kDebugMode) {
+          print('database opened');
+        }
       },
     ).then((value){
       database = value;
@@ -63,13 +71,17 @@ class AppCubit extends Cubit<AppStates>{
     await database.transaction((txn) {
       return txn.rawInsert('INSERT INTO tasks(title, date, time, status) VALUES("$title", "$date", "$time", "new")'
       ).then((value) {
-        print('task $value successfully inserted!');
+        if (kDebugMode) {
+          print('task $value successfully inserted!');
+        }
         emit(AppInsertDBState());
 
         getDataFromDatabase(database);
       }
       ).catchError((error){
-        print('Error when inserting to database ${error.toString()}');
+        if (kDebugMode) {
+          print('Error when inserting to database ${error.toString()}');
+        }
       });
     });
   }
