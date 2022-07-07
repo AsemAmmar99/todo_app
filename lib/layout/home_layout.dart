@@ -118,7 +118,7 @@ class HomeLayout extends StatelessWidget {
                                   showDatePicker(context: context,
                                     initialDate: DateTime.now(),
                                     firstDate: DateTime.now(),
-                                    lastDate: DateTime.parse('2022-01-07'),
+                                    lastDate: DateTime.parse('2024-01-07'),
                                   ).then((value) {
                                     dateController.text = DateFormat.yMMMd().format(value!).toString();
                                   });
