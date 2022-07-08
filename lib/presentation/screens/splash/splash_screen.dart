@@ -12,11 +12,30 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+
+  late AnimationController _controller;
+  late Animation<Offset> _offsetAnimation;
 
   @override
   void initState() {
     super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      animationBehavior: AnimationBehavior.preserve,
+      value: 1,
+      vsync: this,
+
+    )..repeat(reverse: true,);
+    _offsetAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0.0, -1.0),
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.ease,
+    ));
+
     Timer(const Duration(milliseconds: 3000), () {
       Navigator.of(context).pushNamedAndRemoveUntil(screens.HOME_SCREEN, (route) => false);
     });
@@ -24,6 +43,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    Future.delayed(const Duration(milliseconds:1500), (){
+      _controller.stop(canceled: true);
+    });
+
     return Scaffold(
       backgroundColor: lightBlue,
       body: Center(
@@ -32,12 +56,15 @@ class _SplashScreenState extends State<SplashScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Image(
-                    height: 30.h,
-                    width: 70.w,
-                    image: const AssetImage(
-                      "assets/todo.png",
-                    ),
+                child: SlideTransition(
+                  position: _offsetAnimation,
+                  child: Image(
+                      height: 30.h,
+                      width: 70.w,
+                      image: const AssetImage(
+                        "assets/todo.png",
+                      ),
+                  ),
                 ),
               ),
               Flexible(
