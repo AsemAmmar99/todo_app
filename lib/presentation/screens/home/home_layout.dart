@@ -74,178 +74,182 @@ class HomeLayout extends StatelessWidget {
                   }
                   } else {
                     scaffoldKey.currentState!.showBottomSheet((context) =>
-                        Container(
-                          color: darkBlue,
-                          padding: EdgeInsets.symmetric(vertical: 2.h,
-                              horizontal: 3.w),
-                          child: Form(
-                            key: formKey,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                DefaultFormField(
-                                  controller: titleController,
-                                  keyboardType: TextInputType.text,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Title must not be empty';
-                                    }
-                                    return null;
-                                  },
-                                  labelText: 'Task Title',
-                                  textColor: white,
-                                  prefixIcon: const Icon(
-                                    Icons.title_outlined, color: lightBlue,),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 2.h),
-                                  child: DefaultFormField(
-                                    controller: dateController,
-                                    keyboardType: TextInputType.datetime,
-                                    onTap: () {
-                                      showDatePicker(context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime.now(),
-                                        lastDate: DateTime.parse('2024-01-07'),
-                                      ).then((value) {
-                                        selectedDate = value;
-                                        dateController.text = DateFormat.yMMMd()
-                                            .format(value!)
-                                            .toString();
-                                      });
-                                    },
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Date must not be empty';
-                                      }
-                                      return null;
-                                    },
-                                    labelText: 'Task Date',
-                                    textColor: white,
-                                    prefixIcon: const Icon(
-                                      Icons.date_range_outlined,
-                                      color: lightBlue,),
-                                  ),
-                                ),
-                                Row(
+                        Wrap(
+                          children: [
+                            Container(
+                              color: darkBlue,
+                              padding: EdgeInsets.symmetric(vertical: 2.h,
+                                  horizontal: 3.w),
+                              child: Form(
+                                key: formKey,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: EdgeInsetsDirectional.only(
-                                            end: 2.w),
-                                        child: DefaultFormField(
-                                          controller: startTimeController,
-                                          onTap: () {
-                                            showTimePicker(
-                                              context: context,
-                                              initialTime: initialStartTime,
-                                            ).then((value) {
-                                              selectedStartTime = value;
-                                              startTimeController.text =
-                                                  selectedStartTime!.format(
-                                                      context).toString();
-                                            });
-                                          },
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return 'Start Time must not be empty';
-                                            }
-                                            return null;
-                                          },
-                                          labelText: 'Start Time',
-                                          textColor: white,
-                                          prefixIcon: const Icon(
-                                            Icons.timer, color: lightBlue,),
-                                          keyboardType: TextInputType.datetime,
-                                        ),
-                                      ),
+                                    DefaultFormField(
+                                      controller: titleController,
+                                      keyboardType: TextInputType.text,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Title must not be empty';
+                                        }
+                                        return null;
+                                      },
+                                      labelText: 'Task Title',
+                                      textColor: white,
+                                      prefixIcon: const Icon(
+                                        Icons.title_outlined, color: lightBlue,),
                                     ),
-                                    Expanded(
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 2.h),
                                       child: DefaultFormField(
-                                        controller: endTimeController,
+                                        controller: dateController,
+                                        keyboardType: TextInputType.datetime,
                                         onTap: () {
-                                          showTimePicker(
-                                            context: context,
-                                            initialTime: initialEndTime,
+                                          showDatePicker(context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime.now(),
+                                            lastDate: DateTime.parse('2024-01-07'),
                                           ).then((value) {
-                                            if (value!.hour.toDouble() >
-                                                selectedStartTime!.hour
-                                                    .toDouble()) {
-                                              selectedEndTime = value;
-                                              endTimeController.text =
-                                                  selectedEndTime!.format(
-                                                      context).toString();
-                                            } else if (value.hour.toDouble() ==
-                                                selectedStartTime!.hour
-                                                    .toDouble()
-                                                && value.minute.toDouble() >=
-                                                    selectedStartTime!.minute
-                                                        .toDouble()) {
-                                              selectedEndTime = value;
-                                              endTimeController.text =
-                                                  selectedEndTime!.format(
-                                                      context).toString();
-                                            } else {
-                                              Fluttertoast.showToast(
-                                                  msg: "End Time can't be before Start Time",
-                                                  toastLength: Toast
-                                                      .LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 1,
-                                                  backgroundColor: Colors.red,
-                                                  textColor: darkBlue,
-                                                  fontSize: 16.0
-                                              );
-                                            }
+                                            selectedDate = value;
+                                            dateController.text = DateFormat.yMMMd()
+                                                .format(value!)
+                                                .toString();
                                           });
                                         },
-                                        labelText: 'End Time',
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return 'Date must not be empty';
+                                          }
+                                          return null;
+                                        },
+                                        labelText: 'Task Date',
                                         textColor: white,
                                         prefixIcon: const Icon(
-                                          Icons.timer_off_outlined,
+                                          Icons.date_range_outlined,
                                           color: lightBlue,),
-                                        keyboardType: TextInputType.datetime,
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: EdgeInsetsDirectional.only(
+                                                end: 2.w),
+                                            child: DefaultFormField(
+                                              controller: startTimeController,
+                                              onTap: () {
+                                                showTimePicker(
+                                                  context: context,
+                                                  initialTime: initialStartTime,
+                                                ).then((value) {
+                                                  selectedStartTime = value;
+                                                  startTimeController.text =
+                                                      selectedStartTime!.format(
+                                                          context).toString();
+                                                });
+                                              },
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Start Time must not be empty';
+                                                }
+                                                return null;
+                                              },
+                                              labelText: 'Start Time',
+                                              textColor: white,
+                                              prefixIcon: const Icon(
+                                                Icons.timer, color: lightBlue,),
+                                              keyboardType: TextInputType.datetime,
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: DefaultFormField(
+                                            controller: endTimeController,
+                                            onTap: () {
+                                              showTimePicker(
+                                                context: context,
+                                                initialTime: initialEndTime,
+                                              ).then((value) {
+                                                if (value!.hour.toDouble() >
+                                                    selectedStartTime!.hour
+                                                        .toDouble()) {
+                                                  selectedEndTime = value;
+                                                  endTimeController.text =
+                                                      selectedEndTime!.format(
+                                                          context).toString();
+                                                } else if (value.hour.toDouble() ==
+                                                    selectedStartTime!.hour
+                                                        .toDouble()
+                                                    && value.minute.toDouble() >=
+                                                        selectedStartTime!.minute
+                                                            .toDouble()) {
+                                                  selectedEndTime = value;
+                                                  endTimeController.text =
+                                                      selectedEndTime!.format(
+                                                          context).toString();
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg: "End Time can't be before Start Time",
+                                                      toastLength: Toast
+                                                          .LENGTH_SHORT,
+                                                      gravity: ToastGravity.BOTTOM,
+                                                      timeInSecForIosWeb: 1,
+                                                      backgroundColor: Colors.red,
+                                                      textColor: darkBlue,
+                                                      fontSize: 16.0
+                                                  );
+                                                }
+                                              });
+                                            },
+                                            labelText: 'End Time',
+                                            textColor: white,
+                                            prefixIcon: const Icon(
+                                              Icons.timer_off_outlined,
+                                              color: lightBlue,),
+                                            keyboardType: TextInputType.datetime,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 2.h),
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          color: darkBlue,
+                                          border: Border.all(color: black, width: 0.3),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: BlocBuilder<AppCubit, AppStates>(
+                                          builder: (BuildContext context, state) {
+                                            return DropdownButton(
+                                                isExpanded: true,
+                                                dropdownColor: darkBlue,
+                                                icon: Padding(
+                                                  padding: EdgeInsetsDirectional.only(end: 3.w),
+                                                  child: const Icon(Icons.keyboard_arrow_down, color: lightBlue,),
+                                                ),
+                                                value: cubit.dropDownValue,
+                                                items: cubit.dropDownListItems.map((String items) {
+                                                  return DropdownMenuItem(
+                                                      value: items,
+                                                      child: Padding(
+                                                        padding: EdgeInsetsDirectional.only(start: 3.w),
+                                                        child: DefaultText(text: items, color: lightBlue,),
+                                                      )
+                                                  );
+                                                }).toList(),
+                                                onChanged: (String? newValue) => cubit.changeDropDownListValue(newValue!)
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 2.h),
-                                  child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                        color: darkBlue,
-                                        border: Border.all(color: black, width: 0.3),
-                                        borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: BlocBuilder<AppCubit, AppStates>(
-                                      builder: (BuildContext context, state) {
-                                        return DropdownButton(
-                                            isExpanded: true,
-                                            dropdownColor: darkBlue,
-                                            icon: Padding(
-                                              padding: EdgeInsetsDirectional.only(end: 3.w),
-                                              child: const Icon(Icons.keyboard_arrow_down, color: lightBlue,),
-                                            ),
-                                            value: cubit.dropDownValue,
-                                            items: cubit.dropDownListItems.map((String items) {
-                                              return DropdownMenuItem(
-                                                  value: items,
-                                                  child: Padding(
-                                                    padding: EdgeInsetsDirectional.only(start: 3.w),
-                                                    child: DefaultText(text: items, color: lightBlue,),
-                                                  )
-                                              );
-                                            }).toList(),
-                                            onChanged: (String? newValue) => cubit.changeDropDownListValue(newValue!)
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       elevation: 20.0,
                     ).closed.then((value) {
