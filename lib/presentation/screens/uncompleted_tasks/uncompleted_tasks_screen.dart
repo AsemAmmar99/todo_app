@@ -4,8 +4,8 @@ import '../../../../business_logic/cubit/cubit.dart';
 import '../../../../business_logic/cubit/states.dart';
 import '../../views/task_builder.dart';
 
-class ArchivedTasksScreen extends StatelessWidget {
-  const ArchivedTasksScreen({Key? key}) : super(key: key);
+class UncompletedTasksScreen extends StatelessWidget {
+  const UncompletedTasksScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +13,9 @@ class ArchivedTasksScreen extends StatelessWidget {
       listener: (context, state){},
       builder: (context, state){
 
-        var tasks = AppCubit.get(context).archivedTasks;
+        var tasks = AppCubit.get(context).uncompletedTasks;
 
-        return TaskBuilder(tasks: tasks, noTasks: 'No Archived Tasks Yet..', taskType: 'archived');
+        return TaskBuilder(tasks: tasks, noTasks: 'No Uncompleted Tasks..', taskType: 'uncompleted');
       },
     );
   }

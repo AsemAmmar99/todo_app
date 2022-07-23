@@ -4,8 +4,8 @@ import '../../../../business_logic/cubit/cubit.dart';
 import '../../../../business_logic/cubit/states.dart';
 import '../../views/task_builder.dart';
 
-class DoneTasksScreen extends StatelessWidget {
-  const DoneTasksScreen({Key? key}) : super(key: key);
+class CompletedTasksScreen extends StatelessWidget {
+  const CompletedTasksScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +13,9 @@ class DoneTasksScreen extends StatelessWidget {
       listener: (context, state){},
       builder: (context, state){
 
-        var tasks = AppCubit.get(context).doneTasks;
+        var tasks = AppCubit.get(context).completedTasks;
 
-        return TaskBuilder(tasks: tasks, noTasks: 'No Done Tasks Yet..', taskType: 'done');
+        return TaskBuilder(tasks: tasks, noTasks: 'No Completed Tasks Yet..', taskType: 'completed');
       },
     );
   }

@@ -1,13 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../business_logic/cubit/cubit.dart';
 import '../../../../business_logic/cubit/states.dart';
 import '../../views/task_builder.dart';
 
-class NewTasksScreen extends StatelessWidget {
-  const NewTasksScreen({Key? key,}) : super(key: key);
+class FavoriteTasksScreen extends StatelessWidget {
+  const FavoriteTasksScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +13,9 @@ class NewTasksScreen extends StatelessWidget {
       listener: (context, state){},
       builder: (context, state){
 
-        var tasks = AppCubit.get(context).newTasks;
+        var tasks = AppCubit.get(context).favoriteTasks;
 
-        return TaskBuilder(tasks: tasks, noTasks: 'No New Tasks Yet..', taskType: 'new');
+        return TaskBuilder(tasks: tasks, noTasks: 'No Favorite Tasks..', taskType: 'favorite');
       },
     );
   }

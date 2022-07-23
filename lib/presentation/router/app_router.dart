@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/presentation/screens/layout/home_layout.dart';
 import 'package:todo_app/presentation/screens/splash/splash_screen.dart';
 import 'package:todo_app/constants/screens.dart' as screens;
+
+import '../screens/home/home_layout.dart';
 
 class AppRouter{
   late Widget startWidget;

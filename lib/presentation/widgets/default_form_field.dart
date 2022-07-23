@@ -36,6 +36,7 @@ class DefaultFormField extends StatelessWidget {
   final BoxConstraints? suffixIconConstraints;
   final bool readOnly;
   final int? maxLength;
+  final int? errorMaxLines;
   final TextDirection? textDirection;
   final TextAlign textAlign;
 
@@ -75,6 +76,7 @@ class DefaultFormField extends StatelessWidget {
         this.readOnly = false,
         this.cursorColor,
         this.maxLength,
+        this.errorMaxLines = 2,
         this.textDirection = TextDirection.ltr,
         this.textAlign = TextAlign.start})
       : super(key: key);
@@ -112,6 +114,7 @@ class DefaultFormField extends StatelessWidget {
           counterText: '',
           suffixStyle: suffixTextStyle,
           suffixText: suffixText,
+          errorMaxLines: errorMaxLines,
           contentPadding: contentPadding,
           isDense: true,
           floatingLabelBehavior: FloatingLabelBehavior.never,

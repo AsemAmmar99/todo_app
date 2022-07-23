@@ -7,6 +7,7 @@ class DefaultText extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? overflow;
   final Color color;
+  final TextStyle? textStyle;
   final TextAlign? textAlign;
   final double? textScaleFactor;
   final FontWeight? fontWeight;
@@ -19,13 +20,14 @@ class DefaultText extends StatelessWidget {
         required this.text,
         this.maxLines,
         this.color = black,
+        this.textStyle,
         this.textAlign,
         this.textScaleFactor,
         this.fontWeight = FontWeight.normal,
         this.fontStyle = FontStyle.normal,
         this.overflow = TextOverflow.ellipsis,
         this.textDecoration,
-        this.fontSize})
+        this.fontSize,})
       : super(key: key);
 
   @override
@@ -33,7 +35,10 @@ class DefaultText extends StatelessWidget {
     return Text(
       text,
       textDirection: TextDirection.ltr,
-      style: TextStyle(
+      style: textStyle != null
+          ? textStyle!.copyWith(
+          color: color, fontWeight: fontWeight, fontSize: fontSize)
+          : TextStyle(
         color: color,
         fontWeight: fontWeight,
         fontStyle: fontStyle,

@@ -1,12 +1,13 @@
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import 'package:todo_app/presentation/views/favorite_task_item.dart';
 
 import '../styles/colors.dart';
 import '../widgets/default_text.dart';
-import 'archived_task_item.dart';
-import 'done_task_item.dart';
-import 'new_task_item.dart';
+import 'completed_task_item.dart';
+import 'uncompleted_task_item.dart';
+import 'all_task_item.dart';
 
 class TaskBuilder extends StatelessWidget {
   TaskBuilder({Key? key, required this.taskType, required this.noTasks, required this.tasks}) : super(key: key);
@@ -22,12 +23,14 @@ class TaskBuilder extends StatelessWidget {
       condition: tasks.isNotEmpty,
       builder: (context) =>  ListView.separated(
         itemBuilder: (context, index) {
-          if(taskType == 'new') {
-            return NewTaskItem(model: tasks[index]);
-          }else if(taskType == 'done') {
+          if(taskType == 'uncompleted') {
             return DoneTaskItem(model: tasks[index],);
+          }else if(taskType == 'completed') {
+            return CompletedTaskItem(model: tasks[index],);
+          }else if(taskType == 'favourite') {
+            return FavoriteTaskItem(model: tasks[index],);
           }else {
-            return ArchivedTaskItem(model: tasks[index],);
+            return AllTaskItem(model: tasks[index]);
           }
         },
         separatorBuilder: (context, index) => Row(

@@ -10,10 +10,14 @@ class AppGetDBLoadingState extends AppStates {}
 
 class AppGetDBState extends AppStates {}
 
-class AppInsertDBState extends AppStates {}
+class AppInsertTaskState extends AppStates {}
 
-class AppUpdateDBState extends AppStates {}
+class AppChangeStatusState extends AppStates {}
+
+class AppEditTitleState extends AppStates {}
 
 class AppDeleteDBState extends AppStates {}
 
 class AppChangeBSState extends AppStates {}
+
+class AppChangeDDListValueState extends AppStates {}

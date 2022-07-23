@@ -1,12 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:todo_app/business_logic/cubit/states.dart';
-
-import '../../presentation/screens/archived_tasks/archived_tasks_screen.dart';
-import '../../presentation/screens/done_tasks/done_tasks_screen.dart';
-import '../../presentation/screens/new_tasks/new_tasks_screen.dart';
+import 'package:timezone/timezone.dart' as tz;
+import '../../constants/flutter_local_notifications.dart';
+import '../../presentation/screens/all_tasks/all_tasks_screen.dart';
+import '../../presentation/screens/completed_tasks/completed_tasks_screen.dart';
+import '../../presentation/screens/favourite_tasks/favorite_tasks_screen.dart';
+import '../../presentation/screens/uncompleted_tasks/uncompleted_tasks_screen.dart';
 
 class AppCubit extends Cubit<AppStates>{
   AppCubit(): super(AppInitState());
@@ -16,15 +19,17 @@ class AppCubit extends Cubit<AppStates>{
   int currentIndex = 0;
 
   List<Widget> screens = [
-    const NewTasksScreen(),
-    const DoneTasksScreen(),
-    const ArchivedTasksScreen(),
+    const AllTasksScreen(),
+    const UncompletedTasksScreen(),
+    const CompletedTasksScreen(),
+    const FavoriteTasksScreen(),
   ];
 
   List<String> titles = [
-    'New Tasks',
-    'Done Tasks',
-    'Archived Tasks',
+    'All Tasks',
+    'Uncompleted Tasks',
+    'Completed Tasks',
+    'Favorite Tasks',
   ];
 
   void changeIndex(int index){
@@ -32,9 +37,17 @@ class AppCubit extends Cubit<AppStates>{
     emit(AppChangeBNBState());
   }
 
-  List<Map> newTasks = [];
-  List<Map> doneTasks = [];
-  List<Map> archivedTasks = [];
+  List<Map> allTasks = [];
+  List<Map> uncompletedTasks = [];
+  List<Map> completedTasks = [];
+  List<Map> favoriteTasks = [];
+  String dropDownValue = '10 minutes before';
+  var dropDownListItems = [
+    '10 minutes before',
+    '30 minutes before',
+    '1 hour before',
+    '1 day before',
+  ];
   late Database database;
 
   void createDatabase() {
@@ -45,7 +58,7 @@ class AppCubit extends Cubit<AppStates>{
         if (kDebugMode) {
           print('database created');
         }
-        database.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY, title TEXT, date TEXT, time TEXT, status TEXT)').then((value){
+            database.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY, title TEXT, date TEXT, startTime TEXT, endTime TEXT, reminder TEXT, status TEXT)').then((value){
           if (kDebugMode) {
             print('table created');
           }
@@ -67,14 +80,17 @@ class AppCubit extends Cubit<AppStates>{
     });
   }
 
-  insertToDatabase({required String title, required String time, required String date,}) async{
+  insertToDatabase({required String title, required String startTime,  required String endTime, required String date, required String reminder}) async{
+    if(endTime == ''){
+      endTime == '--';
+    }
     await database.transaction((txn) {
-      return txn.rawInsert('INSERT INTO tasks(title, date, time, status) VALUES("$title", "$date", "$time", "new")'
+      return txn.rawInsert('INSERT INTO tasks(title, date, startTime, endTime, reminder, status) VALUES("$title", "$date", "$startTime", "$endTime", "$reminder", "uncompleted")'
       ).then((value) {
         if (kDebugMode) {
           print('task $value successfully inserted!');
         }
-        emit(AppInsertDBState());
+        emit(AppInsertTaskState());
 
         getDataFromDatabase(database);
       }
@@ -88,20 +104,25 @@ class AppCubit extends Cubit<AppStates>{
 
   void getDataFromDatabase(database) {
 
-    newTasks = [];
-    doneTasks = [];
-    archivedTasks = [];
+    allTasks = [];
+    uncompletedTasks = [];
+    completedTasks = [];
+    favoriteTasks = [];
 
     emit(AppGetDBLoadingState());
     database.rawQuery('SELECT * FROM tasks').then((value) {
 
+
       value.forEach((element) {
-        if(element['status'] == 'new'){
-          newTasks.add(element);
-        } else if(element['status'] == 'done'){
-          doneTasks.add(element);
-        } else{
-          archivedTasks.add(element);
+
+        allTasks.add(element);
+
+        if(element['status'] == 'uncompleted'){
+          uncompletedTasks.add(element);
+        } else if(element['status'] == 'completed'){
+          completedTasks.add(element);
+        } else if(element['status'] == 'favorite'){
+          favoriteTasks.add(element);
         }
       });
       
@@ -109,7 +130,7 @@ class AppCubit extends Cubit<AppStates>{
     });
   }
 
-  void updateData({
+  void changeStatus({
   required String status,
   required int id,
   }) async{
@@ -118,8 +139,21 @@ class AppCubit extends Cubit<AppStates>{
         [status, id],
     ).then((value) {
       getDataFromDatabase(database);
-      emit(AppUpdateDBState());
+      emit(AppChangeStatusState());
      });
+  }
+
+  void editTaskTitle({
+    required String title,
+    required int id,
+  }) async{
+    database.rawUpdate(
+      'UPDATE tasks SET title = ? WHERE id = ?',
+      [title, id],
+    ).then((value) {
+      getDataFromDatabase(database);
+      emit(AppEditTitleState());
+    });
   }
 
   void deleteData({
@@ -145,4 +179,38 @@ class AppCubit extends Cubit<AppStates>{
     fabIcon = icon;
     emit(AppChangeBSState());
   }
+
+  void setReminder(
+      String title,
+      DateTime selectedDate,
+      TimeOfDay selectedStartTime,
+      String selectedReminder
+      ){
+
+    int day = selectedDate.day;
+    int hour = selectedStartTime.hour;
+    int minute = selectedStartTime.minute;
+
+    if(selectedReminder == dropDownListItems.elementAt(0)){
+      minute = minute-10;
+    }else if(selectedReminder == dropDownListItems.elementAt(1)){
+      minute = minute-30;
+    }else if(selectedReminder == dropDownListItems.elementAt(2)){
+      hour = hour-1;
+    }else{
+      day = day-1;
+    }
+
+    DateTime joinDateWthTime(DateTime date, int day, int hour, int minute) {
+      return DateTime(date.year, date.month, day, hour, minute);
+    }
+    int i = 0;
+    NotificationService().scheduleNotifications(i++, title, joinDateWthTime(selectedDate, day, hour, minute));
+  }
+
+  void changeDropDownListValue(String newValue){
+    dropDownValue = newValue;
+    emit(AppChangeDDListValueState());
+  }
+
 }
