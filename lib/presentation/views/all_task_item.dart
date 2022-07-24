@@ -22,7 +22,7 @@ class AllTaskItem extends StatelessWidget {
         highlightColor: darkBlue,
         onTap: (){
           Fluttertoast.showToast(
-              msg: "Long touch for Title editing",
+              msg: "Long touch for Title editing, Swipe left or right to delete",
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
