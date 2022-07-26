@@ -81,9 +81,11 @@ class AppCubit extends Cubit<AppStates>{
   }
 
   insertToDatabase({required String title, required String startTime,  required String endTime, required String date, required String reminder}) async{
-    if(endTime == ''){
-      endTime == '--';
+
+    if(endTime.isEmpty){
+      endTime = '--';
     }
+
     await database.transaction((txn) {
       return txn.rawInsert('INSERT INTO tasks(title, date, startTime, endTime, reminder, status) VALUES("$title", "$date", "$startTime", "$endTime", "$reminder", "uncompleted")'
       ).then((value) {
