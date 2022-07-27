@@ -132,6 +132,7 @@ class HomeLayout extends StatelessWidget {
                                       ),
                                     ),
                                     Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Expanded(
                                           child: Padding(
