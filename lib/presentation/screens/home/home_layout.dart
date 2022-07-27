@@ -40,6 +40,7 @@ class HomeLayout extends StatelessWidget {
 
           return Scaffold(
             backgroundColor: lightBlue,
+            extendBody: true,
             key: scaffoldKey,
             appBar: AppBar(
                 backgroundColor: darkBlue,
@@ -251,7 +252,6 @@ class HomeLayout extends StatelessWidget {
                             ),
                           ],
                         ),
-                      elevation: 20.0,
                     ).closed.then((value) {
                       cubit.changeBSState(isShow: false, icon: Icons.edit,);
                     });
@@ -259,42 +259,51 @@ class HomeLayout extends StatelessWidget {
                   }
               },
               child: Icon(cubit.fabIcon, color: lightBlue,),
+              elevation: 20,
             ),
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: cubit.currentIndex,
-              onTap: (index){
-                cubit.changeIndex(index);
-              },
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: darkBlue,
-              selectedItemColor: blue,
-              unselectedItemColor: lightBlue,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.menu,
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            bottomNavigationBar: BottomAppBar(
+              color: darkBlue,
+              elevation: 0,
+              shape: const CircularNotchedRectangle(),
+              notchMargin: 4,
+              child: BottomNavigationBar(
+                currentIndex: cubit.currentIndex,
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                onTap: (index){
+                  cubit.changeIndex(index);
+                },
+                type: BottomNavigationBarType.fixed,
+                selectedItemColor: blue,
+                unselectedItemColor: lightBlue,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.menu,
+                    ),
+                    label: 'All',
                   ),
-                  label: 'All',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.close_outlined,
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.close_outlined,
+                    ),
+                    label: 'Uncompleted',
                   ),
-                  label: 'Uncompleted',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.check_circle_outline,
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.check_circle_outline,
+                    ),
+                    label: 'Completed',
                   ),
-                  label: 'Completed',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.favorite,
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.favorite,
+                    ),
+                    label: 'Favourite',
                   ),
-                  label: 'Favourite',
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
